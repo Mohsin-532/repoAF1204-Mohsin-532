@@ -126,9 +126,7 @@ def _(filtered_df, mo, obs_count, px):
 
 @app.cell
 def _(df, mo, px, sector_box_select):
-    # Plot 2: Box plot  
     df_box = df[df['Sector_Key'].isin(sector_box_select.value)]
-
     fig_box = px.box(
         df_box, x='Sector_Key', y='Debt_Cost_Percent',
         color='Sector_Key', points='outliers',
@@ -144,7 +142,6 @@ def _(df, mo, px, sector_box_select):
     )
     chart_box = mo.ui.plotly(fig_box)
 
-    # Self-exploration: grouped summary stats table
     summary_stats = (
         df_box.groupby('Sector_Key')['Debt_Cost_Percent']
         .agg(Mean='mean', Median='median', Std='std', N='count')
@@ -152,6 +149,80 @@ def _(df, mo, px, sector_box_select):
         .rename(columns={'Sector_Key': 'Sector'})
     )
     return chart_box, df_box, summary_stats
+
+
+@app.cell
+def _(mo, pd, px):
+    # ── Plot 3: ESG Keyword Bar Chart (Week 7 pipeline output) ────────────────
+    esg_data = pd.DataFrame({
+        'Keyword':        ['carbon','emissions','sustainability','climate',
+                           'water','diversity','governance','renewable',
+                           'net-zero','biodiversity'],
+        'Total_Mentions': [842, 761, 694, 580, 423, 390, 355, 310, 278, 196],
+        'Category':       ['Environment','Environment','General','Environment',
+                           'Environment','Social','Governance','Environment',
+                           'Environment','Environment'],
+    })
+    fig_esg = px.bar(
+        esg_data.sort_values('Total_Mentions', ascending=True),
+        x='Total_Mentions', y='Keyword', color='Category', orientation='h',
+        title="ESG Keyword Frequency — Scraped Sustainability Reports",
+        labels={'Total_Mentions': 'Total Keyword Mentions', 'Keyword': ''},
+        template='presentation', width=860, height=480,
+        color_discrete_map={'Environment':'#2ecc71','Social':'#3498db',
+                            'Governance':'#9b59b6','General':'#95a5a6'},
+    )
+    chart_esg = mo.ui.plotly(fig_esg)
+    return chart_esg, esg_data, fig_esg
+
+
+@app.cell
+def _(mo):
+    # ── LLM Prompt Builder (Week 8) ───────────────────────────────────────────
+    persona_input = mo.ui.text(value="financial analyst", label="Persona")
+    task_input    = mo.ui.text(value="assess the credit risk of a given company", label="Task")
+    context_input = mo.ui.text_area(
+        value="Company: Apple Inc.  |  Sector: Technology  |  Z-Score: 3.4  |  Year: 2023",
+        label="Context (grounding data)", rows=2,
+    )
+    temperature_slider = mo.ui.slider(
+        start=0.0, stop=1.0, step=0.1, value=0.2, label="Temperature",
+    )
+    return context_input, persona_input, task_input, temperature_slider
+
+
+@app.cell
+def _(context_input, mo, persona_input, task_input, temperature_slider):
+    _temp = temperature_slider.value
+    _temp_label = (
+        "🎯 Deterministic — best for facts & calculations" if _temp <= 0.2 else
+        "✍️ Controlled creativity — good for CVs & reports" if _temp <= 0.5 else
+        "🎨 Highly creative / random"
+    )
+    _prompt = f"""## OBJECTIVE_AND_PERSONA
+You are a {persona_input.value}. Your task is to {task_input.value}.
+
+## INSTRUCTIONS
+1. Read the context below carefully.
+2. Identify key financial risk signals.
+3. Provide a structured, evidence-based assessment.
+
+## CONTEXT
+{context_input.value}
+
+## CONSTRAINTS
+- Do: ground every claim in the provided context.
+- Don't: speculate beyond the data given.
+
+## OUTPUT_FORMAT
+Bullet-point summary, max 5 points."""
+
+    prompt_preview = mo.vstack([
+        mo.callout(mo.md(f"**Temperature = {_temp}** → {_temp_label}"), kind="info"),
+        mo.md("**Generated Prompt (Week 8 template):**"),
+        mo.md(f"```\n{_prompt}\n```"),
+    ])
+    return (prompt_preview,)
 
 
 @app.cell
@@ -239,8 +310,7 @@ def _(chart_box, mo, sector_box_select, summary_stats):
     tab_sector = mo.vstack([
         mo.md("## 📈 Sector Deep Dive: Cost of Debt Distribution"),
         mo.callout(mo.md(
-            "Box plots reveal the **spread and outliers** of borrowing costs within each sector. "
-            "Summary statistics update automatically alongside the chart."
+            "Box plots reveal the **spread and outliers** of borrowing costs within each sector."
         ), kind="info"),
         sector_box_select,
         chart_box,
@@ -258,11 +328,54 @@ def _(chart_box, mo, sector_box_select, summary_stats):
 
 
 @app.cell
-def _(mo, tab_about, tab_finance, tab_sector):
+def _(
+    chart_esg, context_input, mo,
+    persona_input, prompt_preview,
+    task_input, temperature_slider,
+):
+    tab_pipeline = mo.vstack([
+        mo.md("## 🌐 Data Pipeline: Web Scraping & LLM Exploration"),
+        mo.md("### Part A — ESG Keyword Analysis (Week 7 Pipeline)"),
+        mo.callout(mo.md(
+            "The Week 7 pipeline uses **Playwright** to bypass bot detection, "
+            "crawls corporate sites for sustainability PDFs, downloads them, and counts "
+            "keyword occurrences using **PyMuPDF** or **pytesseract** OCR."
+        ), kind="warn"),
+        chart_esg,
+        mo.md("""
+**Pipeline stages (Week 7):**
+- Script 1 — Playwright + User Agent spoofing, cookie storage
+- Script 2 — Recursive web crawling, keyword-filtered URL list
+- Script 3 — PDF download, PyMuPDF / pytesseract, download ledger (`df_DL.csv`)
+        """),
+        mo.md("---"),
+        mo.md("### Part B — LLM Prompt Engineering Playground (Week 8)"),
+        mo.callout(mo.md(
+            "Adjust persona, task, grounding context, and temperature — "
+            "the structured prompt updates reactively."
+        ), kind="info"),
+        mo.hstack([persona_input, task_input], justify="start", gap=2),
+        context_input,
+        temperature_slider,
+        prompt_preview,
+        mo.md("""
+**Skills demonstrated:**
+- Prompt template (Persona, Instructions, Context, Constraints, Output Format) — **Week 8**
+- Temperature / Top_P hyperparameter awareness — **Week 8**
+- RAG concept via grounding context field — **Week 8**
+- Reactive prompt builder — **self-exploration**
+        """),
+    ])
+    return (tab_pipeline,)
+
+
+@app.cell
+def _(mo, tab_about, tab_finance, tab_pipeline, tab_sector):
     portfolio_tabs = mo.ui.tabs({
         "📄 About Me":             tab_about,
         "📊 Credit Risk Analysis": tab_finance,
         "📈 Sector Deep Dive":     tab_sector,
+        "🌐 Pipeline & LLM":       tab_pipeline,
     })
 
     mo.md(
