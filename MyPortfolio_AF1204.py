@@ -35,7 +35,6 @@ def _():
 
 @app.cell
 def _(pd):
-    # Load & Clean Data 
     csv_url = (
         "https://gist.githubusercontent.com/DrAYim/"
         "80393243abdbb4bfe3b45fef58e8d3c8/raw/"
@@ -52,7 +51,6 @@ def _(pd):
 
 @app.cell
 def _(df, mo):
-    # UI Controls 
     all_sectors = sorted(df['Sector_Key'].unique().tolist())
 
     sector_dropdown = mo.ui.multiselect(
@@ -63,12 +61,15 @@ def _(df, mo):
         start=0, stop=200, step=10, value=0,
         label="Min Market Cap ($ Billions)",
     )
-    return all_sectors, cap_slider, sector_dropdown
+    sector_box_select = mo.ui.multiselect(
+        options=all_sectors, value=all_sectors[:6],
+        label="Select Sectors to Compare",
+    )
+    return all_sectors, cap_slider, sector_box_select, sector_dropdown
 
 
 @app.cell
 def _(cap_slider, df, sector_dropdown):
-    # Reactive Filter 
     filtered_df = df[
         (df['Sector_Key'].isin(sector_dropdown.value)) &
         (df['Market_Cap_B'] >= cap_slider.value)
@@ -87,7 +88,6 @@ async def _(micropip):
 
 @app.cell
 def _(filtered_df, mo, obs_count, px):
-    # Plot 1: Scatter 
     import numpy as np
 
     fig_scatter = px.scatter(
@@ -100,8 +100,6 @@ def _(filtered_df, mo, obs_count, px):
                 'Debt_Cost_Percent': 'Avg. Cost of Debt (%)'},
         template='presentation', width=900, height=560,
     )
-
-    # Distress / safe threshold lines 
     for _x, _col, _label, _xann, _yann in [
         (1.81, 'red',   'Distress (1.81)', 1.5, 1.10),
         (2.99, 'green', 'Safe (2.99)',      3.1, 1.04),
@@ -112,8 +110,6 @@ def _(filtered_df, mo, obs_count, px):
                             x=_xann, xref='x', y=_yann, yref='paper',
                             showarrow=False, yanchor='top'),
         )
-
-    # Self-exploration: live OLS regression overlay using numpy.polyfit
     df_reg = filtered_df[filtered_df['Debt_Cost_Percent'] < 5]
     if not df_reg.empty:
         x_r = df_reg['Z_Score_lag'].astype(float)
@@ -126,6 +122,36 @@ def _(filtered_df, mo, obs_count, px):
 
     chart_scatter = mo.ui.plotly(fig_scatter)
     return chart_scatter, np
+
+
+@app.cell
+def _(df, mo, px, sector_box_select):
+    # Plot 2: Box plot  
+    df_box = df[df['Sector_Key'].isin(sector_box_select.value)]
+
+    fig_box = px.box(
+        df_box, x='Sector_Key', y='Debt_Cost_Percent',
+        color='Sector_Key', points='outliers',
+        title="Cost of Debt Distribution by Sector",
+        labels={'Sector_Key': 'Sector', 'Debt_Cost_Percent': 'Avg. Cost of Debt (%)'},
+        template='presentation', width=900, height=520,
+    )
+    fig_box.update_layout(
+        showlegend=False,
+        xaxis_tickangle=-45,
+        xaxis_tickfont=dict(size=11),
+        margin=dict(b=120),
+    )
+    chart_box = mo.ui.plotly(fig_box)
+
+    # Self-exploration: grouped summary stats table
+    summary_stats = (
+        df_box.groupby('Sector_Key')['Debt_Cost_Percent']
+        .agg(Mean='mean', Median='median', Std='std', N='count')
+        .round(2).reset_index()
+        .rename(columns={'Sector_Key': 'Sector'})
+    )
+    return chart_box, df_box, summary_stats
 
 
 @app.cell
@@ -187,12 +213,11 @@ Plotly, and LLMs — to extract actionable insights from large datasets.
 
 
 @app.cell
-def _(avg_cost_filtered, cap_slider, chart_scatter, mo, obs_count, sector_dropdown, tab_about):
+def _(avg_cost_filtered, cap_slider, chart_scatter, mo, obs_count, sector_dropdown):
     tab_finance = mo.vstack([
         mo.md("## 📊 S&P 500 Credit Risk Analyzer"),
         mo.callout(mo.md(
-            "Explores whether **last year's Altman Z-Score** predicts **this year's cost of debt** — "
-            "directly relevant to the budgeting and financial analysis work I do professionally. "
+            "Explores whether **last year's Altman Z-Score** predicts **this year's cost of debt**. "
             "Extended with a live **OLS regression line** via `numpy.polyfit` beyond the Week 4 template."
         ), kind="info"),
         mo.hstack([sector_dropdown, cap_slider], justify="center", gap=2),
@@ -206,10 +231,38 @@ def _(avg_cost_filtered, cap_slider, chart_scatter, mo, obs_count, sector_dropdo
 - `numpy.polyfit` regression overlay — **self-exploration**
         """),
     ])
+    return (tab_finance,)
 
+
+@app.cell
+def _(chart_box, mo, sector_box_select, summary_stats):
+    tab_sector = mo.vstack([
+        mo.md("## 📈 Sector Deep Dive: Cost of Debt Distribution"),
+        mo.callout(mo.md(
+            "Box plots reveal the **spread and outliers** of borrowing costs within each sector. "
+            "Summary statistics update automatically alongside the chart."
+        ), kind="info"),
+        sector_box_select,
+        chart_box,
+        mo.md("**Auto-generated summary statistics** (`groupby().agg()` — self-exploration):"),
+        mo.ui.table(summary_stats),
+        mo.md("""
+**Skills demonstrated:**
+- `px.box` with `points='outliers'` — **Week 3**
+- Grouped aggregations (mean, median, std, count) — **Week 4** pandas
+- Reactive chart + table from one widget — **Week 4** reactivity
+- `.agg()` summary table as Marimo UI element — **self-exploration**
+        """),
+    ])
+    return (tab_sector,)
+
+
+@app.cell
+def _(mo, tab_about, tab_finance, tab_sector):
     portfolio_tabs = mo.ui.tabs({
         "📄 About Me":             tab_about,
         "📊 Credit Risk Analysis": tab_finance,
+        "📈 Sector Deep Dive":     tab_sector,
     })
 
     mo.md(
