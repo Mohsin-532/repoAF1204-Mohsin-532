@@ -20,7 +20,7 @@ app = marimo.App()
 def _(mo):
     mo.md(r"""
     ---
-    ## 🎓 Personal Portfolio Webpage
+    ##Personal Portfolio Webpage
     AF1204 · Mohsin Ali Imran Rashid · BSc Accounting & Finance · Bayes Business School
     """)
     return
@@ -140,7 +140,7 @@ def _(mo):
         data=base64.b64decode(_CV_B64),
         filename="Mohsin_Ali_Imran_Rashid_CV.docx",
         mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        label="📄 Download CV (Word)",
+        label="Download Resume (Word File .docx)",
     )
     return (cv_download_btn,)
 
@@ -297,7 +297,7 @@ def _(count, cv_download_btn, df_final, filtered_portfolio, mo, pd, px,
 
     # LLM Prompt Preview 
     _temp = temperature_slider.value
-    _temp_label = "🎯 Deterministic" if _temp <= 0.2 else ("✍️ Controlled creativity" if _temp <= 0.5 else "🎨 Highly creative")
+    _temp_label = "Deterministic" if _temp <= 0.2 else ("Controlled creativity" if _temp <= 0.5 else "Highly creative")
 
     _prompt = (
         "## OBJECTIVE_AND_PERSONA\n"
@@ -336,7 +336,7 @@ def _(cap_slider, chart_box, chart_element, chart_esg, context_input,
     tab_cv = mo.vstack([
         mo.md("""
 ### Mohsin Ali Imran Rashid
-📧 Mohsin.Imran@city.ac.uk &nbsp;|&nbsp; 📞 07512 623 965
+Mohsin.Imran@city.ac.uk &nbsp;|&nbsp; 07512 623 965
 
 ---
 
@@ -377,13 +377,13 @@ Plotly, and LLMs — to extract actionable insights from large datasets.
 
 | Area | Tools & Techniques |
 |------|--------------------|
-| 🐍 Programming | Python · pandas · numpy · exception handling · f-strings |
-| 📊 Visualisation | Plotly Express — scatter, box, bar, geo maps |
-| 🌐 Web Scraping | Playwright · PyMuPDF · pytesseract · asyncio |
-| 🤖 AI & LLMs | Prompt Engineering · RAG · Grounding · AI-as-Judge |
-| 🗄️ Data Sources | yfinance · WRDS (Compustat / CRSP) · GitHub Gist |
-| 🔧 Dev Tools | Marimo · GitHub Codespaces · GitHub Pages (WASM) |
-| 📋 Office | Excel · Word · PowerPoint |
+| Programming | Python · pandas · numpy · exception handling · f-strings |
+| Visualisation | Plotly Express — scatter, box, bar, geo maps |
+| Web Scraping | Playwright · PyMuPDF · pytesseract · asyncio |
+| AI & LLMs | Prompt Engineering · RAG · Grounding · AI-as-Judge |
+| Data Sources | yfinance · WRDS (Compustat / CRSP) · GitHub Gist |
+| Dev Tools | Marimo · GitHub Codespaces · GitHub Pages (WASM) |
+| Office | Excel · Word · PowerPoint |
 
 **Languages:** English (Fluent) · Urdu (Fluent)
         """),
@@ -395,7 +395,7 @@ Plotly, and LLMs — to extract actionable insights from large datasets.
 
     # Tab 2: Credit Risk Analysis
     tab_data_content = mo.vstack([
-        mo.md("## 📊 S&P 500 Credit Risk Analyzer"),
+        mo.md("## S&P 500 Credit Risk Analyzer"),
         mo.callout(mo.md(
             "Explores whether **last year's Altman Z-Score** predicts **this year's cost of debt** — "
             "directly relevant to my professional finance work. "
@@ -416,7 +416,7 @@ Plotly, and LLMs — to extract actionable insights from large datasets.
 
     # Tab 3: Sector Deep Dive 
     tab_sector = mo.vstack([
-        mo.md("## 📈 Sector Deep Dive: Cost of Debt Distribution"),
+        mo.md("## Sector Deep Dive: Cost of Debt Distribution"),
         mo.callout(mo.md(
             "Box plots reveal the **spread and outliers** of borrowing costs within each sector. "
             "A summary statistics table updates automatically alongside the chart."
@@ -437,7 +437,7 @@ Plotly, and LLMs — to extract actionable insights from large datasets.
 
     # Tab 4: Pipeline & LLM 
     tab_pipeline = mo.vstack([
-        mo.md("## 🌐 Data Pipeline: Web Scraping & LLM Exploration"),
+        mo.md("## Data Pipeline: Web Scraping & LLM Exploration"),
         mo.md("### Part A — ESG Keyword Analysis (Week 7 Pipeline)"),
         mo.callout(mo.md(
             "The Week 7 three-script pipeline uses **Playwright** to bypass bot detection, "
@@ -473,7 +473,7 @@ Plotly, and LLMs — to extract actionable insights from large datasets.
 
     # Tab 5: Personal Interests 
     tab_personal = mo.vstack([
-        mo.md("## 🌍 My Hobbies: Travel & Culture"),
+        mo.md("## My Hobbies: Travel & Culture"),
         mo.md(
             "Growing up in Pakistan and moving to London for university gave me a strong "
             "cross-cultural perspective. I enjoy travelling and experiencing new environments."
@@ -490,11 +490,11 @@ Plotly, and LLMs — to extract actionable insights from large datasets.
 def _(mo, tab_cv, tab_data_content, tab_personal, tab_pipeline, tab_sector):
     # Assemble and display the multi-tab webpage
     app_tabs = mo.ui.tabs({
-        "📄 About Me":             tab_cv,
-        "📊 Credit Risk Analysis": tab_data_content,
-        "📈 Sector Deep Dive":     tab_sector,
-        "🌐 Pipeline & LLM":       tab_pipeline,
-        "🌍 Personal Interests":   tab_personal,
+        "About Me":             tab_cv,
+        "Credit Risk Analysis": tab_data_content,
+        "Sector Deep Dive":     tab_sector,
+        "Pipeline & LLM":       tab_pipeline,
+        "Personal Interests":   tab_personal,
         })
 
     # Display the final app
