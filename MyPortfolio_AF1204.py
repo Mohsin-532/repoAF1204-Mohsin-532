@@ -246,7 +246,7 @@ def _(count, df_final, filtered_portfolio, mo, pd, px, sector_box_select):
         projection="natural earth", title="My Travel Footprint",
         labels={"Visit_Year_str": "Visit Year"},
     )
-    fig_travel.update_traces(marker=dict(size=14))
+    fig_travel = fig_travel.update_traces(marker=dict(size=14))
 
     return chart_box, chart_element, chart_esg, df_box, fig_travel, summary_stats
 
@@ -394,16 +394,25 @@ def _(
     tab_cv = mo.vstack([
         mo.md("""
 ### Mohsin Ali Imran Rashid
-Mohsin.Imran@city.ac.uk &nbsp;|&nbsp; 07512 623 965
+Mohsin.Imran@city.ac.uk &nbsp;|&nbsp; 07512 623 965 &nbsp;|&nbsp; London, United Kingdom
 
 ---
 
-**Profile**
+**About Me**
 
-Finance student at Bayes Business School with hands-on experience in budgeting,
-financial record-keeping, and cost tracking across two professional roles.
-Passionate about combining financial analysis with modern data tools — Python, Marimo,
-Plotly, and LLMs — to extract actionable insights from large datasets.
+I am a first-year BSc Accounting & Finance student at Bayes Business School, City, University of London — one of the UK's leading finance institutions. Originally from Pakistan, I relocated to London in early 2025 to pursue my undergraduate degree, following the completion of a Foundation Programme at Into City. That transition — moving across cultures, navigating a new academic environment, and managing real professional responsibilities simultaneously — shaped me into someone who is adaptable, self-motivated, and genuinely driven by a desire to grow.
+
+Growing up in Pakistan gave me an early appreciation for the real-world stakes of financial decision-making. I saw firsthand how budgeting constraints, cash flow management, and financial planning shaped outcomes for both families and organisations. That grounding is something I carry into every role and project I take on — finance, to me, is never just numbers on a spreadsheet; it is about the decisions those numbers inform.
+
+---
+
+**Why Finance & Data Science?**
+
+My interest in finance began through my work experience before university. Managing records, tracking expenditures, and building Excel models for two organisations taught me that financial insight is only as good as the systems used to surface it. When I encountered data science tools — Python, Plotly, and eventually LLMs — I immediately saw their potential to transform the way financial analysis is done.
+
+This portfolio is a direct expression of that intersection. Rather than treating AF1204 as a standalone technical module, I approached it as an opportunity to apply data science methods to genuinely meaningful financial questions — specifically, whether a company's Altman Z-Score predicts its future cost of debt. The answer, as the scatter chart in this portfolio shows, is nuanced and sector-dependent, which is exactly the kind of insight that traditional spreadsheet tools struggle to surface at scale.
+
+I intend to carry this dual focus — rigorous financial understanding paired with modern analytical tools — throughout my degree and into my career.
 
 ---
 
@@ -416,18 +425,31 @@ Plotly, and LLMs — to extract actionable insights from large datasets.
 
 *Key Module:* AF1204 — Introduction to Data Science and AI Tools
 
+During my Foundation Programme I developed strong academic English, quantitative reasoning, and study skills specifically designed to bridge international educational backgrounds with UK university standards. This preparation gave me the confidence to hit the ground running at Bayes — a school consistently ranked among the top finance schools in Europe.
+
 ---
 
-**Experience**
+**Professional Experience**
 
 **Finance Assistant — Al Furqan Trust** *(Jan 2023 – Present)*
-- Maintained financial records and tracked income/expenses across multiple project cycles
-- Built and maintained Excel models to streamline budgeting and expenditure monitoring
-- Analysed financial data trends to inform strategic decisions
+
+Al Furqan Trust is a non-profit organisation, and working here introduced me to the unique financial pressures that charitable organisations face — tight budgets, accountability to donors, and the need for meticulous record-keeping without the resources of a commercial finance team. My responsibilities included:
+- Maintaining financial records and tracking income/expenses across multiple project cycles
+- Building and maintaining Excel models to streamline budgeting and expenditure monitoring
+- Analysing financial data trends to inform strategic decisions and donor reporting
+- Supporting end-of-cycle financial reconciliation across project accounts
+
+This role gave me a strong foundation in disciplined financial record-keeping and taught me to work carefully under conditions where errors carry real consequences.
 
 **Finance Assistant (Construction) — The Point** *(Aug 2023 – Present)*
-- Supported budgeting, cost tracking, and invoice processing for construction projects
-- Managed financial documentation and ensured numerical accuracy across multi-stage reporting
+
+The Point operates in the construction sector, where financial management is particularly complex due to multi-stage project timelines, fluctuating material costs, and layered contractor invoicing. My work here has been more commercially oriented, giving me exposure to:
+- Budgeting and cost tracking across active construction projects
+- Invoice processing and supplier payment scheduling
+- Financial documentation management across multi-stage reporting cycles
+- Identifying cost variances and escalating discrepancies to senior management
+
+Working across both a non-profit and a commercial construction firm has given me an unusually broad perspective on how financial management adapts to organisational context — a perspective I find directly valuable in my academic studies.
 
 ---
 
@@ -444,6 +466,14 @@ Plotly, and LLMs — to extract actionable insights from large datasets.
 | Office | Excel · Word · PowerPoint |
 
 **Languages:** English (Fluent) · Urdu (Fluent)
+
+---
+
+**Career Goals**
+
+In the short term, I am focused on building a strong academic foundation at Bayes while continuing to develop practical data skills that complement my finance studies. I am particularly interested in roles at the intersection of financial analysis and technology — whether that is fintech, investment analytics, or data-driven corporate finance.
+
+Longer term, I aspire to work in a role where I can apply quantitative methods to strategic financial decisions — the kind of work where knowing how to write a Python pipeline and read a balance sheet are equally valuable. I believe that finance professionals who are genuinely comfortable with data tools will have a significant advantage in the coming decade, and this portfolio is my first step in building that profile.
         """),
         mo.md("---"),
         mo.md("**Download a copy of my full CV:**"),
